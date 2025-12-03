@@ -34,22 +34,26 @@ class RuleEvaluator():
         moves = []
         
         # Triples
-        for val in range(6):
-            if counts[val] >= 3:
-                if val == 0:  # 1s
+        for index in range(6):
+            if counts[index] >= 3:
+                val = index + 1
+                if val == 1:  # 1s
                     moves.append((1, 3, 1000))
                 else:
-                    moves.append((val + 1, 3, (val + 1) * 100))
+                    moves.append((val, 3, val * 100))
+                    
         
         # Singles (1s and 5s)
-        for val in [0, 4]:  # 1 and 5
-            n = counts[val]
+        for index in [0, 4]:  # 1 and 5
+            val = index + 1
+            n = counts[index]
             if n > 0:
                 # All non-empty subsets
                 for k in range(1, n+1):
-                    points = k * 100 if val == 0 else k * 50
-                    moves.append((val + 1, k, points))
-        
+                    if k%3 != 0:
+                        points = k * 100 if val == 1 else k * 50
+                        moves.append((val, k, points))
+            
         return moves
         
         

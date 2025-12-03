@@ -1,5 +1,8 @@
 __pycache__
-/data
 /env
+/data
+/runs
 /yolo_data
 yolo11n.pt
+TODO
+/old

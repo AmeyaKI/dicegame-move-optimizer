@@ -44,7 +44,9 @@ def helper(remaining_dice: int, total_points: int) -> tuple[int]:
     return tuple(totals)
 
 ### SIMULATOR ###
-# TODO: Player choose to stop rolling
+# TODO: Simulate SOLELY the next diec roll
+# Later TODO: Player can choose to stop rolling
+
 def simulator(dice_rolls: np.ndarray) -> dict | int:
     initial_rolls = RULES.check_roll(dice_rolls)
     
@@ -67,7 +69,7 @@ def low_score_remover(scores: dict, begin: bool = True):
     """
     minimum = 1000 if begin else 350
     
-    for key, value_list in scores.items():
+    for _, value_list in scores.items():
         for i in range(len(value_list)): # iterate through list
             if value_list[i] < minimum:  
                 value_list[i] = 0
@@ -80,36 +82,36 @@ def create_distribution(scores: dict) -> None:
     every image is one move
 
     """
-    key = next(iter(scores))
-    # for key in scores.keys():
-    values = np.array(scores[key], dtype=int)
-    
-    unique_scores, counts = np.unique(values, return_counts=True)
-    percentages = (counts / len(values)) * 100
-    
-    #### Plotly ####
-
-    fig = go.Figure()
-    fig.add_trace(go.Bar(
-        x=unique_scores,
-        y=percentages,
-        name = "Point Distribution",
-        marker_color = 'darkblue',
-        hovertemplate='%{y:.3f}% of paths<extra>Score: %{x}</extra>'
+    # key = next(iter(scores))
+    for key in scores.keys():
+        values = np.array(scores[key], dtype=int)
         
-    ))
-    
-    fig.update_layout(
-        title=f"Distribution for Move: {key}",
-        xaxis_title = "Score",
-        yaxis_title = "Frequency (%)",
-        template = "plotly_white",
-        bargap = 0,
-        hovermode = "closest"
-    )
-    
-    fig.write_image(f"Distribution_{key}.png")
-    fig.show()
+        unique_scores, counts = np.unique(values, return_counts=True)
+        percentages = (counts / len(values)) * 100
+        
+        #### Plotly ####
+
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=unique_scores,
+            y=percentages,
+            name = "Point Distribution",
+            marker_color = 'darkblue',
+            hovertemplate='%{y:.3f}% of distribution<extra>Score: %{x}</extra>'
+            
+        ))
+        
+        fig.update_layout(
+            title=f"Distribution for Move: {key}",
+            xaxis_title = "Score",
+            yaxis_title = "Frequency (%)",
+            template = "plotly_white",
+            bargap = 0,
+            hovermode = "closest"
+        )
+        
+        fig.write_image(f"Distribution_{key}.png")
+        fig.show()
     
     #### Matplotlib ####
     

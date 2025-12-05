@@ -12,7 +12,7 @@ def load_model(weights_path):
     except FileNotFoundError as e:
         print(f"{e}: Model weights not found.")
     
-def custom_image(image_dir):
+def custom_image_detector(image_dir):
     try:
         img = cv2.imread(image_dir)
     except FileNotFoundError as e:
@@ -40,20 +40,27 @@ def predict_dice_values(model, img):
     if dice_values is None:
         return np.array([])
         
-    dice_values.sort(key=lambda x: x[2])
-    dice_values_final = [d[0] for d in dice_values]
+    dice_values.sort(key=lambda x: x[2]) # sort dice by order in which they appear in image (left to right) thru x_center
+    dice_values_final = [d[0] for d in dice_values] # get dice pred_class values
 
-    return np.array(dice_values_final, dtype=np.int32)
+    return np.array(dice_values_final, dtype=np.int64)
+
 
 def main():
-    ...
-    weights = sys.argv[1]
-    image_path = sys.argv[2]
+    weights = 'runs/yolo/dice_model_v1/weights/best.pt' # input("Enter path to weights: "")
+    custom_image_path = 'sample_v3' # input("Enter path to custom image: ")
     
     model = load_model(weights)
-    img = custom_image(image_path)
+    
+    print("Loaded weights.")
+    
+    img = custom_image_detector(custom_image_path)
+    
+    print("Read image.")
     
     dice_values = predict_dice_values(model, img)
+    
+    print("Calculated dice values.")
 
     if dice_values.size == 0:
         print("No dice detected.")

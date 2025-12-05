@@ -18,10 +18,10 @@ device = (
 results = model.train(
     data="yolo_data/data.yaml",
     project=output_dir,
-    name="dice_model_v1",
+    name="dice_model_v2",
     exist_ok=True,
 
-    epochs=50, # gotta get map50-95 and map50 to converge
+    epochs=60, 
     imgsz=640, # image size
     batch=16,
     lr0=0.001,

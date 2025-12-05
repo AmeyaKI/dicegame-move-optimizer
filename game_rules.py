@@ -27,30 +27,34 @@ class RuleEvaluator():
         #         num_dice: number of dice
         #         points: total number of points
         # """
-        counts = [np.count_nonzero(dice_rolls==v) for v in self.DICE_VALUES]
-        return self.check_roll_from_counts(counts)
-    
-    def check_roll_from_counts(self, counts: list[int]) -> list[tuple[int,int,int]]:
+        counts = [np.count_nonzero(dice_rolls==v) for v in self.DICE_VALUES] # [1, 1, 1, 1, 1, 1] --> [6, 0, 0, 0, 0, 0]
         moves = []
         
         # Triples
         for index in range(6):
-            if counts[index] >= 3:
+            num_of_dice = counts[index]
+            while num_of_dice >= 3:
                 val = index + 1
                 if val == 1:  # 1s
                     moves.append((1, 3, 1000))
                 else:
-                    moves.append((val, 3, val * 100))
+                    moves.append((val, 3, val * 100))    
+                num_of_dice -= 3   
+            # if counts[index] >= 3:
+            #     val = index + 1
+            #     if val == 1:  # 1s
+            #         moves.append((1, 3, 1000))
+            #     else:
+            #         moves.append((val, 3, val * 100))
                     
-        
         # Singles (1s and 5s)
         for index in [0, 4]:  # 1 and 5
             val = index + 1
-            n = counts[index]
-            if n > 0:
-                # All non-empty subsets
-                for k in range(1, n+1):
-                    if k%3 != 0:
+            num_of_dice = counts[index]
+            
+            if num_of_dice > 0:
+                for k in range(1, num_of_dice + 1):
+                    if k % 3 != 0:
                         points = k * 100 if val == 1 else k * 50
                         moves.append((val, k, points))
             

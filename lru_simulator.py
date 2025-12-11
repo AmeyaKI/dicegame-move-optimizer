@@ -78,7 +78,7 @@ def low_score_remover(scores: dict, begin: bool = True):
     
 
 ### DISTRIBUTION PLOTTER ###
-def create_distribution(scores: dict) -> None:
+def create_distribution(scores: dict):
     """
     every image is one move
 
@@ -87,6 +87,8 @@ def create_distribution(scores: dict) -> None:
         values = np.array(scores[key], dtype=int)
         
         unique_scores, counts = np.unique(values, return_counts=True)
+            # unique_scores = unique values
+            # counts = # of each unique value
         percentages = (counts / len(values)) * 100
         
         #### Plotly ####
@@ -111,6 +113,8 @@ def create_distribution(scores: dict) -> None:
         
         fig.write_image(f"Distribution_{key}.png")
         fig.show()
+        
+        return unique_scores, percentages
     
     #### Matplotlib ####
     
@@ -121,9 +125,8 @@ def create_distribution(scores: dict) -> None:
     # plt.savefig(f"Sim: {key}.png")
     # plt.show()
 
-
-# TBD
-def best_move(scores: dict):
+# WORK IN PROGRESS
+def best_move(scores: dict, unique_scores, percentages):
     """Determine which move is the best by calculating statistics (tbd) from 
     each key's distribution in scores
 
@@ -131,16 +134,11 @@ def best_move(scores: dict):
         scores (dict): _description_
 
     """
-    means = np.array([]) # array of each moves means
-    medians = np.array([]) # arrayt of each moves medians
     
     scores_df = pd.DataFrame(scores)
     
-    for key in scores.keys():
-        values = np.array(scores[key], dtype=int)
-        means = np.append(means, np.mean(values))
-        medians = np.append(medians, np.median(values))
-        
+    means = scores_df.mean()
+    medians = scores_df.median()
     
     return means, medians    
 
@@ -161,7 +159,9 @@ def main():
     
     scores_dict = low_score_remover(scores_dict, True) # type: ignore
     
-    create_distribution(scores_dict) # type: ignore
+    unique_scores, percentages = create_distribution(scores_dict) # type: ignore
+    
+    best_move(scores_dict, unique_scores, percentages)
 
 if __name__=="__main__":
     main()

@@ -3,7 +3,7 @@ __pycache__
 /data
 /runs
 /yolo_data
-yolo11n.pt
+yolo11*
 TODO
 /old
 *.jpg

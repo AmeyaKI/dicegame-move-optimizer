@@ -6,9 +6,11 @@ NOTE: Cite
 -Primary Dataset (700 images): https://www.kaggle.com/datasets/nomihsa965/dice-detection-upper-view
 
 
-yolo labeled dataset: https://www.kaggle.com/datasets/nellbyler/d6-dice (diff colors)
+Future:
 
-Potential future dataset (different colors + background): https://universe.roboflow.com/yolo-hkw8z/dice-detection-3rsln
+Better dice (labeled): https://www.kaggle.com/datasets/nellbyler/d6-dice (diff colors)
+
+COlored dice (labeled): https://universe.roboflow.com/yolo-hkw8z/dice-detection-3rsln
 
 
-11k images: https://www.kaggle.com/datasets/koryakinp/d6-dices-images
+11k images (UNLABELED): https://www.kaggle.com/datasets/koryakinp/d6-dices-images

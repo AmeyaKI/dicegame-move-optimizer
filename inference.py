@@ -48,7 +48,7 @@ def predict_dice_values(model, img):
 
 def main():
     weights = 'runs/yolo/dice_model_v1/weights/best.pt' # input("Enter path to weights: "")
-    custom_image_path = os.path.join(os.getcwd(), 'sample_v1.jpg') # input("Enter path to custom image: ")
+    custom_image_path = os.path.join(os.getcwd(), 'test_v1.jpg') # input("Enter path to custom image: ")
     
     model = load_model(weights)
     
@@ -62,7 +62,7 @@ def main():
     
     print("Calculated dice values.")
 
-    print(f"Holistic dice scores: {dice_scores}")
+    print(f"Holistic dice scores:\n{dice_scores}")
     
     if dice_values.size == 0:
         print("No dice detected.")

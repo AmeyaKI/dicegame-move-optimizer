@@ -66,7 +66,8 @@ def main():
     process_dataset()
     
 if __name__ == '__main__':
-    create_yaml(Path("yolo_data"))
+    # create_yaml(Path("yolo_data"))
     # main()
+    ...
 
     

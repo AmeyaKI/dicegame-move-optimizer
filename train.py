@@ -2,8 +2,15 @@ import torch
 from ultralytics import YOLO # type: ignore
 import os
 
-model = YOLO("yolo11n.pt")
+# NOTE: 2 methods:
+    # 1. Increase epochs on 11n
+    # 2. try more intensive yolo11s or yolo11m
+# existing model
+model = YOLO("runs/yolo/dice_model_v1/weights/last.pt")
+    # 100 epochs
 
+# model = YOLO("yolo11n.pt")
+# model = YOLO("yolo11m.pt") 
 print("###### Model Loaded ######")
 
 output_dir = os.path.join(os.getcwd(), "runs/yolo")
@@ -16,12 +23,13 @@ device = (
 )
 
 results = model.train(
+    epochs=50, # 
+
     data="yolo_data/data.yaml",
     project=output_dir,
-    name="dice_model_v2",
+    name="dice_model_v2", #  100 epochs
     exist_ok=True,
 
-    epochs=60, 
     imgsz=640, # image size
     batch=16,
     lr0=0.001,
@@ -34,8 +42,13 @@ results = model.train(
 print("\n###### Training Finished ######")
 print(results)
 
+
+
 print("\n###### Running Validation ######")
-val_results = model.val()
+val_results = model.val(
+    project=output_dir, 
+    name="dice_model_v2_val"  
+)
 
 print("\n###### Validation Metrics ######")
 precision     = val_results.results_dict.get("metrics/precision(B)", None)
@@ -47,6 +60,7 @@ print(f"Precision: {precision:.4f}" if precision else "Precision not found")
 print(f"Recall:    {recall:.4f}" if recall else "Recall not found")
 print(f"mAP50:     {map50:.4f}" if map50 else "mAP50 not found")
 print(f"mAP50-95:  {map5095:.4f}" if map5095 else "mAP50-95 not found")
+
 
 
 print("\n###### Accuracy per Class (Dice #) ######")

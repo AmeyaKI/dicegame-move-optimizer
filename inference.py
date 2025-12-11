@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 import asyncio
 
-# 12/5/2025 NOTE: Works but model needs more diversified dataset
+# 12/11/2025 NOTE: Model needs more diversified dataset for higher accuracy 
  
 # Basic Image/Model finding functions with try/except error detection 
 async def load_model(weights_path):
@@ -14,7 +14,6 @@ async def load_model(weights_path):
         model = YOLO(weights_path)
     except FileNotFoundError as e:
         print(f"{e}: Model weights not found.")
-    print("Loaded weights.")
     return model
     
 async def find_image(image_dir):
@@ -88,7 +87,7 @@ def use_webcam(model):
     cv2.destroyAllWindows()
 
 
-
+# streamlined decision making process 
 async def activate_mode(mode):
     mode = mode.strip().lower()
     
@@ -120,6 +119,7 @@ async def main():
     weights = 'runs/yolo/dice_model_v2/weights/best.pt' # default model weights
     
     model = await load_model(weights)
+    print("Loaded weights.")
     
     mode = input("Webcam or Image: ")
     

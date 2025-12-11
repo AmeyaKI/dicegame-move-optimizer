@@ -1,79 +1,91 @@
 import torch
 from ultralytics import YOLO # type: ignore
 import os
+from inference import load_model
 
-# NOTE: 2 methods:
-    # 1. Increase epochs on 11n
-    # 2. try more intensive yolo11s or yolo11m
-# existing model
-model = YOLO("runs/yolo/dice_model_v1/weights/last.pt")
-    # 100 epochs
+# NOTE: need to incorporate more diverse dataset to improve predictve capacity
+        # (LATER ON) NOTE: 2 methods to increase map:
+            # 1. Increase epochs on 11n - tried ---> works
+            # 2. try more intensive yolo11s or yolo11m
 
-# model = YOLO("yolo11n.pt")
-# model = YOLO("yolo11m.pt") 
-print("###### Model Loaded ######")
+def train_model(model, output_dir):
+    os.makedirs(output_dir, exist_ok=True)
 
-output_dir = os.path.join(os.getcwd(), "runs/yolo")
-os.makedirs(output_dir, exist_ok=True)
+    device = (
+        "cuda" if torch.cuda.is_available() else
+        "mps" if torch.backends.mps.is_available() else
+        "cpu"
+    )
 
-device = (
-    "cuda" if torch.cuda.is_available() else
-    "mps" if torch.backends.mps.is_available() else
-    "cpu"
-)
+    results = model.train(
+        epochs=50, # 
 
-results = model.train(
-    epochs=50, # 
+        data="yolo_data/data.yaml",
+        project=output_dir,
+        name="dice_model_v2", #  100 epochs
+        exist_ok=True,
 
-    data="yolo_data/data.yaml",
-    project=output_dir,
-    name="dice_model_v2", #  100 epochs
-    exist_ok=True,
+        imgsz=640, # image size
+        batch=16,
+        lr0=0.001,
+        
+        workers=4,
+        device=device,
+        verbose=True,
+    )
 
-    imgsz=640, # image size
-    batch=16,
-    lr0=0.001,
+    print("\n###### Training Finished ######")
+    print(results)
+
+def val_model(model, output_dir):
+    print("\n###### Running Validation ######")
+    val_results = model.val(
+        project=output_dir, 
+        name="dice_model_v2_val"  
+    )
+
+    print("\n###### Validation Metrics ######")
+    precision     = val_results.results_dict.get("metrics/precision(B)", None)
+    recall        = val_results.results_dict.get("metrics/recall(B)", None)
+    map50         = val_results.results_dict.get("metrics/mAP50(B)", None)
+    map5095       = val_results.results_dict.get("metrics/mAP50-95(B)", None)
+
+    print(f"Precision: {precision:.4f}" if precision else "Precision not found")
+    print(f"Recall:    {recall:.4f}" if recall else "Recall not found")
+    print(f"mAP50:     {map50:.4f}" if map50 else "mAP50 not found")
+    print(f"mAP50-95:  {map5095:.4f}" if map5095 else "mAP50-95 not found")
+
+
+
+    print("\n###### Accuracy per Class (Dice #) ######")
+    metrics = val_results.box
+    for cls_id, cls_name in enumerate(model.names):
+        precision = metrics.p[cls_id]
+        recall = metrics.r[cls_id]
+        ap50 = metrics.ap50[cls_id]
+        ap5095 = metrics.ap[cls_id]
+        
+        print(f"Class {cls_id} ({cls_name}): "
+            f"P={precision:.3f}, R={recall:.3f}, "
+            f"AP50={ap50:.3f}, AP50-95={ap5095:.3f}")
+
+    print("\nBest weights saved at:")
+    print("  runs/detect/dice_model_v1/weights/best.pt")
+
+def main():
+    model_path = "runs/yolo/dice_model_v2/weights/last.pt" # 100  epcohs
+    output_dir = os.path.join(os.getcwd(), "runs/yolo")
+
+    model = load_model(model_path) 
+        # model = YOLO("yolo11n.pt")
+        # model = YOLO("yolo11m.pt")
+    print("###### Model Loaded ######")
     
-    workers=4,
-    device=device,
-    verbose=True,
-)
-
-print("\n###### Training Finished ######")
-print(results)
-
-
-
-print("\n###### Running Validation ######")
-val_results = model.val(
-    project=output_dir, 
-    name="dice_model_v2_val"  
-)
-
-print("\n###### Validation Metrics ######")
-precision     = val_results.results_dict.get("metrics/precision(B)", None)
-recall        = val_results.results_dict.get("metrics/recall(B)", None)
-map50         = val_results.results_dict.get("metrics/mAP50(B)", None)
-map5095       = val_results.results_dict.get("metrics/mAP50-95(B)", None)
-
-print(f"Precision: {precision:.4f}" if precision else "Precision not found")
-print(f"Recall:    {recall:.4f}" if recall else "Recall not found")
-print(f"mAP50:     {map50:.4f}" if map50 else "mAP50 not found")
-print(f"mAP50-95:  {map5095:.4f}" if map5095 else "mAP50-95 not found")
-
-
-
-print("\n###### Accuracy per Class (Dice #) ######")
-metrics = val_results.box
-for cls_id, cls_name in enumerate(model.names):
-    precision = metrics.p[cls_id]
-    recall = metrics.r[cls_id]
-    ap50 = metrics.ap50[cls_id]
-    ap5095 = metrics.ap[cls_id]
+    train_model(model, output_dir)
     
-    print(f"Class {cls_id} ({cls_name}): "
-          f"P={precision:.3f}, R={recall:.3f}, "
-          f"AP50={ap50:.3f}, AP50-95={ap5095:.3f}")
+    val_model(model, output_dir)
 
-print("\nBest weights saved at:")
-print("  runs/detect/dice_model_v1/weights/best.pt")
+    
+    
+if __name__ == '__main__':
+    main()

@@ -1,16 +1,10 @@
 # dicegame-move-optimizer
 (Work In-Progress)
 
-
-NOTE: Cite
--Primary Dataset (700 images): https://www.kaggle.com/datasets/nomihsa965/dice-detection-upper-view
-
-
-Future:
-
-Better dice (labeled): https://www.kaggle.com/datasets/nellbyler/d6-dice (diff colors)
-
-COlored dice (labeled): https://universe.roboflow.com/yolo-hkw8z/dice-detection-3rsln
+Two parts
+1. Dice Value Detector (using YOLOv11)
+2. Dice Game Move Simulator (using statistics and probability)
 
 
-11k images (UNLABELED): https://www.kaggle.com/datasets/koryakinp/d6-dices-images
+Primary Dataset (700 images): https://www.kaggle.com/datasets/nomihsa965/dice-detection-upper-view
+
